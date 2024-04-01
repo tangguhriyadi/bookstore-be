@@ -5,6 +5,7 @@ import { BookRepository } from "../repositories/Book";
 import { CustomerRepository } from "../repositories/Customer";
 import { OrderRepository } from "../repositories/Order";
 import { OrderItemRepository } from "../repositories/OrderItem";
+import db from "../infrastructure/db";
 
 interface OrderServiceInterface {
     getAll(dto: OrderListDto): Promise<BaseAPIResponse<Order[]>>;
@@ -48,7 +49,11 @@ export class Orderservice implements OrderServiceInterface {
     }
 
     async order(dto: OrderDto): Promise<BaseAPIResponse> {
+        const tx = await db.connect();
+
         try {
+            await tx.query("BEGIN");
+
             dto.order_date = new Date().toISOString();
             const { quantity, book_id, customer_id } = dto;
 
@@ -66,8 +71,8 @@ export class Orderservice implements OrderServiceInterface {
 
             // validate order
             const orderItem = await this.orderItemRepository.getMany(dto);
-            if(orderItem.length > 0) {
-                return Promise.reject("You Have Bought The Book")
+            if (orderItem.length > 0) {
+                return Promise.reject("You Have Bought The Book");
             }
 
             dto.total_amount = quantity * book.price;
@@ -83,12 +88,17 @@ export class Orderservice implements OrderServiceInterface {
 
             await this.orderItemRepository.order(dto);
 
+            await tx.query("COMMIT");
+
             return Promise.resolve({
                 message: "Success Order Book",
                 status: "success",
             });
         } catch (err) {
+            await tx.query("ROLLBACK");
             return Promise.reject(err);
+        } finally {
+            await tx.release();
         }
     }
 
