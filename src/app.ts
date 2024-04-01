@@ -4,7 +4,7 @@ import helmet from "helmet";
 import cors from "cors";
 
 import api from "./api";
-import MessageResponse from "./interfaces/MessageResponse";
+import BaseAPIResponse from "./interfaces/BaseAPIResponse";
 
 const app = express();
 
@@ -13,9 +13,10 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-app.get<{}, MessageResponse>("/", (req, res) => {
+app.get<{}, BaseAPIResponse>("/", (req, res) => {
     res.json({
         message: "🦄🌈✨👋🌎🌍🌏✨🌈🦄",
+        status: "success",
     });
 });
 

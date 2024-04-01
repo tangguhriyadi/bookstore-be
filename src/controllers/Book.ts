@@ -1,8 +1,13 @@
 import { Request, Response } from "express";
 import { BookService } from "../services/Book";
-import { Book } from "../entities/Book";
+import { QueryDto } from "../dto/query";
+import { BookDto } from "../dto/book";
 
-export class BookController {
+interface BookControllerInterface {
+    getAllBooks(req: Request, res: Response): Promise<void>;
+}
+
+export class BookController implements BookControllerInterface {
     private bookService: BookService;
 
     constructor() {
@@ -10,18 +15,23 @@ export class BookController {
     }
 
     async getAllBooks(req: Request, res: Response): Promise<void> {
-        const books = await this.bookService.getAllBooks();
-        console.log("controller", books);
-        res.json(books);
-    }
+        try {
+            const { query } = req;
+            const { limit, page } = query as QueryDto;
 
-    // getBookById(req: Request, res: Response): void {
-    //     const id = parseInt(req.params.id);
-    //     const book = this.bookService.getBookById(id);
-    //     if (book) {
-    //         res.json(book);
-    //     } else {
-    //         res.status(404).send("Book not found");
-    //     }
-    // }
+            const dto = new BookDto(
+                parseInt(page ?? "1"),
+                parseInt(limit ?? "10")
+            );
+
+            const books = await this.bookService.getAllBooks(dto);
+
+            res.json(books);
+        } catch (err) {
+            res.json({
+                message: err,
+                status: "error",
+            });
+        }
+    }
 }
