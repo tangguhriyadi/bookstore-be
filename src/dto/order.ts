@@ -26,6 +26,27 @@ export class OrderDto {
     }
 }
 
+export class OrderListDto {
+    page: number;
+    limit: number;
+    customer_id?: number;
+    totalItems?: number;
+    totalPages?: number;
+    is_canceled?: boolean;
+
+    constructor(
+        page?: number,
+        limit?: number,
+        customerId?: number,
+        isCanceled?: boolean
+    ) {
+        this.page = page || 1;
+        this.limit = limit || 10;
+        this.customer_id = customerId;
+        this.is_canceled = isCanceled;
+    }
+}
+
 export interface CancelOrderParam {
     order_id: number;
 }

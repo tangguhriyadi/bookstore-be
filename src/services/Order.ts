@@ -1,11 +1,13 @@
-import { OrderDto } from "../dto/order";
-import BaseAPIResponse from "../interfaces/BaseAPIResponse";
+import { OrderDto, OrderListDto } from "../dto/order";
+import { Order } from "../entities/Order";
+import BaseAPIResponse, { Pagination } from "../interfaces/BaseAPIResponse";
 import { BookRepository } from "../repositories/Book";
 import { CustomerRepository } from "../repositories/Customer";
 import { OrderRepository } from "../repositories/Order";
 import { OrderItemRepository } from "../repositories/OrderItem";
 
 interface OrderServiceInterface {
+    getAll(dto: OrderListDto): Promise<BaseAPIResponse<Order[]>>;
     order(dto: OrderDto): Promise<BaseAPIResponse>;
     cancelOrder(orderId: number): Promise<BaseAPIResponse>;
 }
@@ -21,6 +23,28 @@ export class Orderservice implements OrderServiceInterface {
         this.bookRepository = new BookRepository();
         this.customerRepository = new CustomerRepository();
         this.orderItemRepository = new OrderItemRepository();
+    }
+
+    async getAll(dto: OrderListDto): Promise<BaseAPIResponse<Order[]>> {
+        try {
+            const order = await this.orderRepository.getAll(dto);
+            if (order.length === 0) {
+                return Promise.reject("No Order Found");
+            }
+            return Promise.resolve({
+                message: "Success Get Orders",
+                data: order,
+                status: "success",
+                pagination: new Pagination(
+                    dto.totalItems,
+                    dto.page,
+                    dto.limit,
+                    dto.totalPages
+                ),
+            });
+        } catch (error) {
+            return Promise.reject(error);
+        }
     }
 
     async order(dto: OrderDto): Promise<BaseAPIResponse> {
