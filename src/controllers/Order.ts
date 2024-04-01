@@ -54,7 +54,7 @@ export class OrderController implements OrderControllerInterface {
 
             res.json(orders);
         } catch (err) {
-            res.json({
+            res.status(500).json({
                 message: String(err),
                 status: "error",
             });
@@ -93,12 +93,12 @@ export class OrderController implements OrderControllerInterface {
 
             await this.orderService.order(body);
 
-            res.json({
+            res.status(500).json({
                 message: "Success Order Book",
                 status: "success",
             });
         } catch (err) {
-            res.json({
+            res.status(500).json({
                 message: err,
                 status: "error",
             });

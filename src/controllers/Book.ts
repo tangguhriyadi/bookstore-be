@@ -36,7 +36,7 @@ export class BookController implements BookControllerInterface {
 
             res.json(books);
         } catch (err) {
-            res.json({
+            res.status(500).json({
                 message: err,
                 status: "error",
             });

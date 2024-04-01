@@ -30,7 +30,7 @@ export class CustomerController implements CustomerControllerInterface {
 
             res.json(createCustomer);
         } catch (err) {
-            res.json({
+            res.status(500).json({
                 message: err,
                 status: "error",
             });
