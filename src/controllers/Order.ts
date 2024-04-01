@@ -93,7 +93,7 @@ export class OrderController implements OrderControllerInterface {
 
             await this.orderService.order(body);
 
-            res.status(500).json({
+            res.json({
                 message: "Success Order Book",
                 status: "success",
             });
