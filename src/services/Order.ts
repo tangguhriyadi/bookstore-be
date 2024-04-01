@@ -88,6 +88,12 @@ export class Orderservice implements OrderServiceInterface {
 
             await this.orderItemRepository.order(dto);
 
+            // deduct
+            await this.customerRepository.deduct(
+                customer.id,
+                customer.point - dto.total_amount
+            );
+
             await tx.query("COMMIT");
 
             return Promise.resolve({

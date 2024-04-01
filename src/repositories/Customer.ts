@@ -6,6 +6,7 @@ import { QueryResult } from "pg";
 interface CustomerRepositoryInterface {
     create(dto: CustomerDto): Promise<Customer>;
     getById(customerId: number): Promise<Customer>;
+    deduct(customerId: number, amount: number): Promise<void>;
 }
 
 export class CustomerRepository implements CustomerRepositoryInterface {
@@ -31,6 +32,17 @@ export class CustomerRepository implements CustomerRepositoryInterface {
         `);
 
             return Promise.resolve(query.rows[0]);
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }
+    async deduct(customerId: number, amount: number): Promise<void> {
+        try {
+            await db.query(`
+            UPDATE customers 
+            SET point=${amount}
+            WHERE id=${customerId}
+        `);
         } catch (err) {
             return Promise.reject(err);
         }
