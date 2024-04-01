@@ -64,6 +64,12 @@ export class Orderservice implements OrderServiceInterface {
                 return Promise.reject("Book Not Found");
             }
 
+            // validate order
+            const orderItem = await this.orderItemRepository.getMany(dto);
+            if(orderItem.length > 0) {
+                return Promise.reject("You Have Bought The Book")
+            }
+
             dto.total_amount = quantity * book.price;
             dto.price_per_unit = book.price;
 
