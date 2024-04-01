@@ -35,6 +35,14 @@ export class OrderController implements OrderControllerInterface {
             const { query } = req;
             const { limit, page, customer_id, is_canceled = false } = query;
 
+            if (!customer_id) {
+                res.json({
+                    message: "Customer Id is Required",
+                    status: "error",
+                });
+                return;
+            }
+
             const dto = new OrderListDto(
                 parseInt(page ?? "1"),
                 parseInt(limit ?? "10"),
@@ -56,6 +64,32 @@ export class OrderController implements OrderControllerInterface {
     async order(req: Request<{}, {}, OrderDto>, res: Response): Promise<void> {
         try {
             const { body } = req;
+
+            const { book_id, customer_id, quantity } = body;
+
+            if (!book_id) {
+                res.json({
+                    message: "Book Id is Required",
+                    status: "error",
+                });
+                return;
+            }
+
+            if (!customer_id) {
+                res.json({
+                    message: "Customer Id is Required",
+                    status: "error",
+                });
+                return;
+            }
+
+            if (!quantity) {
+                res.json({
+                    message: "Quantity is Required",
+                    status: "error",
+                });
+                return;
+            }
 
             await this.orderService.order(body);
 
