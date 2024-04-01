@@ -35,6 +35,7 @@ export class BookRepository implements BookRepositoryInterface {
                     genres g ON g.id = bg.genre_id
                 GROUP BY
                     b.id, a.id
+                ORDER BY b.id
                 limit ${limit} offset ${offset}`
             );
             const totalItemsResult = await db.query(

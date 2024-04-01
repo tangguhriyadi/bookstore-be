@@ -65,6 +65,8 @@ export class OrderRepository implements OrderRepositoryInterface {
                 o.is_canceled = ${is_canceled}
             GROUP BY 
                 o.id, b.id
+            ORDER BY
+                o.id
             limit ${limit} offset ${offset}
             `
         );
