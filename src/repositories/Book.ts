@@ -6,6 +6,7 @@ import { BookDto } from "../dto/book";
 
 interface BookRepositoryInterface {
     getAll(dto: BookDto): Promise<Book[]>;
+    getById(bookId: number): Promise<Book>;
 }
 
 export class BookRepository implements BookRepositoryInterface {
@@ -44,6 +45,18 @@ export class BookRepository implements BookRepositoryInterface {
             dto.totalItems = totalItems;
             dto.totalPages = totalPages;
             return Promise.resolve(query.rows);
+        } catch (err) {
+            return Promise.reject(err);
+        }
+    }
+
+    async getById(bookId: number): Promise<Book> {
+        try {
+            const query: QueryResult<Book> = await db.query(`
+                SELECT * FROM books WHERE id=${bookId}
+            `);
+
+            return Promise.resolve(query.rows[0]);
         } catch (err) {
             return Promise.reject(err);
         }

@@ -1,9 +1,13 @@
 import { CustomerDto } from "../dto/customer";
+import BaseAPIResponse from "../interfaces/BaseAPIResponse";
 import { CustomerService } from "../services/Customer";
 import { Request, Response } from "express";
 
 interface CustomerControllerInterface {
-    create(req: Request, res: Response): Promise<void>;
+    create(
+        req: Request<{}, BaseAPIResponse, CustomerDto>,
+        res: Response
+    ): Promise<void>;
 }
 
 export class CustomerController implements CustomerControllerInterface {
@@ -13,16 +17,16 @@ export class CustomerController implements CustomerControllerInterface {
         this.customerService = new CustomerService();
     }
 
-    async create(req: Request, res: Response): Promise<void> {
+    async create(
+        req: Request<{}, BaseAPIResponse, CustomerDto>,
+        res: Response
+    ): Promise<void> {
         try {
             const { body } = req;
 
-            const { email, name } = body as CustomerDto;
-
-            const createCustomer = await this.customerService.createCustomer({
-                email,
-                name,
-            });
+            const createCustomer = await this.customerService.createCustomer(
+                body
+            );
 
             res.json(createCustomer);
         } catch (err) {

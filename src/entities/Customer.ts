@@ -4,4 +4,5 @@ export interface Customer {
     email: string;
     address?: string;
     phone_number?: string;
+    point: number;
 }
