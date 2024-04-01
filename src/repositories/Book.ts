@@ -45,7 +45,6 @@ export class BookRepository implements BookRepositoryInterface {
             dto.totalPages = totalPages;
             return Promise.resolve(query.rows);
         } catch (err) {
-            console.log(err);
             return Promise.reject(err);
         }
     }

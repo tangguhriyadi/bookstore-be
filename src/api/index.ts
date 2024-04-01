@@ -1,8 +1,8 @@
 import express from "express";
 
 import BaseAPIResponse from "../interfaces/BaseAPIResponse";
-import { BookController } from "../controllers/Book";
-import { Book } from "../entities/Book";
+import BookRouter from "./book";
+import CustomerRouter from "./customer";
 
 const router = express.Router();
 
@@ -13,10 +13,7 @@ router.get<{}, BaseAPIResponse>("/", (req, res) => {
     });
 });
 
-const bookController = new BookController();
-
-router.get<{}, BaseAPIResponse<Book[]>>("/books", (req, res) =>
-    bookController.getAllBooks(req, res)
-);
+router.use("/books", BookRouter);
+router.use("/customers", CustomerRouter);
 
 export default router;
