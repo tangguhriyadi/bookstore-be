@@ -114,6 +114,11 @@ export class OrderController implements OrderControllerInterface {
             const { order_id } = params;
 
             await this.orderService.cancelOrder(order_id);
+
+            res.json({
+                message: "Success Cancel",
+                status: "success",
+            });
         } catch (err) {
             res.json({
                 message: err,
