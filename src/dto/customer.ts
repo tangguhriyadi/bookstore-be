@@ -7,3 +7,7 @@ export class CustomerDto {
         this.email = email;
     }
 }
+
+export interface GetCustomerByIdParam {
+    id: string
+}
