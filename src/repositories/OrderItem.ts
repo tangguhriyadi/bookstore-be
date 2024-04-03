@@ -36,7 +36,8 @@ export class OrderItemRepository implements OrderItemRepositoryInterface {
                     o.customer_id = ${customer_id}
                 AND 
                     oi.book_id = ${book_id}
-
+                WHERE 
+                    o.is_canceled = false
             `);
 
             return Promise.resolve(orderItem.rows);
