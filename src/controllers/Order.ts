@@ -97,9 +97,15 @@ export class OrderController implements OrderControllerInterface {
                 message: "Success Order Book",
                 status: "success",
             });
-        } catch (err) {
-            res.status(500).json({
-                message: err,
+        } catch (err: any) {
+            if (!err.code) {
+                res.status(500).json({
+                    message: err,
+                    status: "error",
+                });
+            }
+            res.status(err.code).json({
+                message: err.message,
                 status: "error",
             });
         }

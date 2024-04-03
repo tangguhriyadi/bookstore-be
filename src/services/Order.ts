@@ -60,19 +60,28 @@ export class Orderservice implements OrderServiceInterface {
             // validate customer
             const customer = await this.customerRepository.getById(customer_id);
             if (!customer) {
-                return Promise.reject("Customer Not Found");
+                return Promise.reject({
+                    message: "Customer Not Found",
+                    code: 400,
+                });
             }
 
             // validate book
             const book = await this.bookRepository.getById(book_id);
             if (!book) {
-                return Promise.reject("Book Not Found");
+                return Promise.reject({
+                    message: "Book Not Found",
+                    code: 400,
+                });
             }
 
             // validate order
             const orderItem = await this.orderItemRepository.getMany(dto);
             if (orderItem.length > 0) {
-                return Promise.reject("You Have Bought The Book");
+                return Promise.reject({
+                    message: "You have already bought the book",
+                    code: 400,
+                });
             }
 
             dto.total_amount = quantity * book.price;
@@ -80,7 +89,10 @@ export class Orderservice implements OrderServiceInterface {
 
             // validate point
             if (dto.total_amount > customer.point) {
-                return Promise.reject("Not Enough Point");
+                return Promise.reject({
+                    message: "Not enough point",
+                    code: 400,
+                });
             }
 
             const order = await this.orderRepository.order(dto);
@@ -110,11 +122,20 @@ export class Orderservice implements OrderServiceInterface {
 
     async cancelOrder(orderId: number): Promise<BaseAPIResponse> {
         try {
-            const cancelOrder = this.orderRepository.cancelOrder(orderId);
+            const cancelOrder = await this.orderRepository.cancelOrder(orderId);
 
             if (!cancelOrder) {
                 return Promise.reject("Failed to cancel");
             }
+
+            const customer = await this.customerRepository.getById(
+                cancelOrder.customer_id
+            );
+
+            const amount = cancelOrder.total_amount + customer.point;
+
+            await this.orderRepository.refund(cancelOrder.customer_id, amount);
+
             return Promise.resolve({
                 message: "success Cancel",
                 status: "success",

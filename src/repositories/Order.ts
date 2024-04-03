@@ -2,11 +2,13 @@ import { QueryResult } from "pg";
 import { OrderDto, OrderListDto } from "../dto/order";
 import { Order } from "../entities/Order";
 import db from "../infrastructure/db";
+import { Customer } from "../entities/Customer";
 
 interface OrderRepositoryInterface {
     order(dto: OrderDto): Promise<Order>;
     cancelOrder(orderId: number): Promise<Order>;
     getAll(dto: OrderListDto): Promise<Order[]>;
+    refund(customerId: number, amount: number): Promise<void>;
 }
 
 export class OrderRepository implements OrderRepositoryInterface {
@@ -31,10 +33,14 @@ export class OrderRepository implements OrderRepositoryInterface {
                 `UPDATE orders
                 SET is_canceled=true
                 WHERE id=${orderId}
-                RETURNING id`
+                RETURNING *`
             );
 
-            return Promise.resolve(query.rows[0]);
+            const result = query.rows[0]
+
+            result.total_amount = parseInt(query.rows[0].total_amount)
+
+            return Promise.resolve(result);
         } catch (error) {
             return Promise.reject(error);
         }
@@ -77,5 +83,20 @@ export class OrderRepository implements OrderRepositoryInterface {
         dto.totalItems = totalItems;
         dto.totalPages = totalPages;
         return Promise.resolve(query.rows);
+    }
+
+    async refund(customerId: number, amount: number): Promise<void> {
+        try {
+            console.log(customerId)
+            console.log(amount)
+            await db.query(`
+            UPDATE customers
+            SET point=${amount}
+            WHERE id=${customerId}
+        `);
+        } catch (error) {
+            console.log(error)
+            return Promise.reject(error);
+        }
     }
 }

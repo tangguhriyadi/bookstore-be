@@ -27,9 +27,13 @@ export class CustomerRepository implements CustomerRepositoryInterface {
 
     async getById(customerId: number): Promise<Customer> {
         try {
-            const query: QueryResult<Customer> = await db.query(`
+            const query = await db.query(`
             SELECT * FROM customers WHERE id=${customerId}
         `);
+
+            const res = query.rows[0];
+
+            res.point = parseInt(query.rows[0].point);
 
             return Promise.resolve(query.rows[0]);
         } catch (err) {
