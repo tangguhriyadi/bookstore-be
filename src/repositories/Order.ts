@@ -52,7 +52,8 @@ export class OrderRepository implements OrderRepositoryInterface {
                 'price', b.price
             ) AS book,
             o.total_amount,
-            o.is_canceled
+            o.is_canceled,
+            o.order_date
             FROM 
                 orders o
             JOIN 
